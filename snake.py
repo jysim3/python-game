@@ -78,8 +78,8 @@ class Snake:
         if (self.row, self.col) in self.moves:
             return False
         self.moves.append((self.row,self.col))
-        if len(self.moves) > 3:
-            self.moves.pop(0)
+        # if len(self.moves) > 3:
+        #     self.moves.pop(0)
         if (self.row, self.col) == self.food:
             self.eat()
         else:

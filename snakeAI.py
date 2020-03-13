@@ -98,11 +98,11 @@ class SnakeAI():
 
                     if m:
                         reward = snake.score()
-                        next_state = snake.state()
 
                     else:
                         reward = -3
 
+                    next_state = snake.state()
 
 
                     self.train_batch(state,direction,reward, next_state)
