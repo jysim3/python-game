@@ -70,5 +70,5 @@ class Game():
             sleep(speed)
 
 if __name__=="__main__":
-    g = Game((4,4))
+    g = Game((7,7))
     g.run(1)

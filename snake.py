@@ -12,22 +12,26 @@ class Snake:
         self.history = (self.r_size//2+1, self.c_size//2)
         self.new_food()
         self.just_ate = False
-        self.life = 0
         self._total_score = 0
         self.move()
         self.moves = [(self.r_size//2, self.c_size//2)] + self.moves
+        self.game_over = False
     def state(self):
         move = [0,0,0,0]
         move[self.direction - 273] = 1
         danger = [0,0,0,0]
-        if self.moves[-1][0] == 0:
-            danger[0] = 1
-        if self.moves[-1][1] == 0:
-            danger[1] = 1
-        if self.moves[-1][0] == self.r_size-1:
-            danger[2] = 1
-        if self.moves[-1][1] == self.c_size-1:
-            danger[3] = 1
+        head = self.moves[-1]
+
+        radar_distance = 7
+        for i in range(1,radar_distance):
+            if head[0] - i < 0 or (head[0] - i, head[1]) in self.moves:
+                danger[0] = max(danger[0], radar_distance - i)
+            if head[1] - i < 0 or (head[0], head[1] - i) in self.moves:
+                danger[1] = max(danger[1], radar_distance - i)
+            if head[0] + i > self.r_size-1 or (head[0] + i, head[1]) in self.moves:
+                danger[2] = max(danger[2], radar_distance - i)
+            if head[1] + i > self.c_size-1 or (head[0], head[1] + 1) in self.moves:
+                danger[3] = max(danger[3], radar_distance - i)
 
         food = [0,0,0,0]
         if self.food[0] > self.moves[-1][0]:
@@ -41,9 +45,10 @@ class Snake:
         return (*move, *danger, *food)
     def score(self):
         if self.just_ate:
-            return self.r_size * self.c_size 
-        else:
-            return 0
+            return 10
+        elif self.game_over:
+            return -10
+        return 0
     def total_score(self):
         return self._total_score
     def new_food(self):
@@ -65,7 +70,6 @@ class Snake:
     def move(self):
         self.just_ate = False
         result = False
-        self.life += 1
         self.history = self.row,self.col
         if self.direction == LEFT:
             result = self.move_left()
@@ -76,15 +80,14 @@ class Snake:
         elif self.direction == DOWN:
             result = self.move_down()
         if (self.row, self.col) in self.moves:
+            self.game_over = True
             return False
         self.moves.append((self.row,self.col))
-        # if len(self.moves) > 3:
-        #     self.moves.pop(0)
         if (self.row, self.col) == self.food:
             self.eat()
         else:
             self.last_move = self.moves.pop(0)
-        #self.moves = [(self.row,self.col)]
+        self.game_over = not result 
         return result
     def move_left(self):
         if self.row != 0:
