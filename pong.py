@@ -11,6 +11,23 @@ class Pong():
         self.player2 = self.PongPlayer(width-10,height//2, pole_size[1], height)
         self.ball = self.Ball(10, height//2)
 
+    def player1_state(self):
+        ball_dir = self.ball.angle
+        x, y, _, pole_height = self.player1.info()
+        ball_x, ball_y, _, _ = self.ball.info()
+        x_distance = abs(ball_x - x)
+        y_distance = ball_y - (y + pole_height) // 2
+        return [ball_dir, x_distance, y_distance]
+
+    def player2_state(self):
+        ball_dir = -self.ball.angle
+        x, y, _, pole_height = self.player1.info()
+        ball_x, ball_y, _, _ = self.ball.info()
+        x_distance = abs(ball_x - x)
+        y_distance = ball_y - (y + pole_height) // 2
+        return [ball_dir, x_distance, y_distance]
+
+
     def player2_up(self):
         self.player2.set_direction(UP)
     def player2_down(self):

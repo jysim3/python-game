@@ -4,7 +4,7 @@ import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Flatten
 import numpy as np
-from snake import Snake 
+from pong import Pong
 from windowsInhibitor import WindowsInhibitor as wi
 
 
@@ -12,19 +12,19 @@ print(tf.__version__)
 class SnakeAI():
     def __init__(self, action_dim):
         self.action_dim = action_dim
-        self.size = (50,50)
-        self.state_dim = len(Snake(self.size).state())
+        self.size = (800, 900)
+        self.state_dim = len(Pong(self.size).state())
 
         model = Sequential([
             #Dense(self.action_dim),
-            Dense(5,input_dim=self.state_dim),
-            Dense(self.action_dim),
+            #Dense(5,input_dim=self.state_dim),
+            Dense(self.action_dim, input_dim = self.state_dim),
         ])
         model.compile(optimizer=tf.keras.optimizers.Adam(lr=0.001), 
                         loss=tf.keras.losses.MSE)
         model.summary()
         self.model = model
-        self.batch_size = 500
+        self.batch_size = 10
         self.stored_batch = 2000
         self.epsilon = 1
         self.epsilon_decay = 1.0005
@@ -38,7 +38,7 @@ class SnakeAI():
         state = np.reshape(state, [1,self.state_dim])
         Q_estimates = self.model.predict(state)
         # Q_estimates = [self.q[ (*state), ]]
-        d = ["U","D","R","L"]
+        d = ["U","D"]
         if r and random.random() < self.epsilon:
             '''
             explore
@@ -93,6 +93,7 @@ class SnakeAI():
         max_size = 0
         scores = [0]
         osSleep = wi()
+        # TODO: Change snake to pong
         try:
             osSleep.inhibit()
             for n_game in range(self.n_games):
@@ -160,7 +161,7 @@ class SnakeAI():
 
 
 if __name__ == "__main__":
-    s = SnakeAI(action_dim=4)
+    s = SnakeAI(action_dim=2)
     if input("Load? (y/n)") != "n":
         s.load()
     s.run()

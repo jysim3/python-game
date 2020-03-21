@@ -22,16 +22,25 @@ class Snake:
         danger = [0,0,0,0]
         head = self.moves[-1]
 
-        radar_distance = 7
-        for i in range(1,radar_distance):
-            if head[0] - i < 0 or (head[0] - i, head[1]) in self.moves:
-                danger[0] = max(danger[0], radar_distance - i)
-            if head[1] - i < 0 or (head[0], head[1] - i) in self.moves:
-                danger[1] = max(danger[1], radar_distance - i)
-            if head[0] + i > self.r_size-1 or (head[0] + i, head[1]) in self.moves:
-                danger[2] = max(danger[2], radar_distance - i)
-            if head[1] + i > self.c_size-1 or (head[0], head[1] + 1) in self.moves:
-                danger[3] = max(danger[3], radar_distance - i)
+        # radar_distance = 7
+        # for i in range(1,radar_distance):
+        #     if head[0] - i < 0 or (head[0] - i, head[1]) in self.moves:
+        #         danger[0] = max(danger[0], radar_distance - i)
+        #     if head[1] - i < 0 or (head[0], head[1] - i) in self.moves:
+        #         danger[1] = max(danger[1], radar_distance - i)
+        #     if head[0] + i > self.r_size-1 or (head[0] + i, head[1]) in self.moves:
+        #         danger[2] = max(danger[2], radar_distance - i)
+        #     if head[1] + i > self.c_size-1 or (head[0], head[1] + i) in self.moves:
+        #         danger[3] = max(danger[3], radar_distance - i)
+        i = 1
+        if head[0] - i < 0 or (head[0] - i, head[1]) in self.moves:
+            danger[0] = 1
+        if head[1] - i < 0 or (head[0], head[1] - i) in self.moves:
+            danger[1] = 1
+        if head[0] + i > self.r_size-1 or (head[0] + i, head[1]) in self.moves:
+            danger[2] = 1
+        if head[1] + i > self.c_size-1 or (head[0], head[1] + i) in self.moves:
+            danger[3] = 1
 
         food = [0,0,0,0]
         if self.food[0] > self.moves[-1][0]:
