@@ -54,9 +54,9 @@ class Snake:
         return (*move, *danger, *food)
     def score(self):
         if self.just_ate:
-            return 10
+            return 100
         elif self.game_over:
-            return -10
+            return -100
         return 0
     def total_score(self):
         return self._total_score

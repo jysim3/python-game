@@ -11,7 +11,7 @@ class Game():
         self.player_color = [255,255,255]
         self.screen_size = (screen_size)
         self.game_size = (x//10 for x in self.screen_size)
-        self.speed = .05
+        self.speed = .01
 
         self.inactive = [0,0,0]
         self.border = 0
@@ -37,27 +37,41 @@ class Game():
         self.player1 = player1
         self.player2 = player2
         self.screen = screen
-    def run(self,  n_life=5, get_action=None, Ai=None):
+    def run(self, n_life=5, get_action=None, Ai=None):
+
         while n_life > 0:
             pygame.init()
             actions = pygame.event.get()
             for event in actions:
                 if event.type == QUIT:
                     sys.exit()
-            keys = pygame.key.get_pressed()
+            if get_action:
+                action = get_action(self.game.player1_state())
+                self.game.player1_change_dir(action-1)
+                action = get_action(self.game.player2_state())
+                self.game.player2_change_dir(action-1)
+            else:
+                keys = pygame.key.get_pressed()
+                if keys[W]:
+                    self.game.player2_up()
+                if keys[S]:
+                    self.game.player2_down()
+                if keys[UP]:
+                    self.game.player1_up()
+                if keys[DOWN]:
+                    self.game.player1_down()
 
-            if keys[W]:
-                self.game.player2_up()
-            if keys[S]:
-                self.game.player2_down()
-            if keys[UP]:
-                self.game.player1_up()
-            if keys[DOWN]:
-                self.game.player1_down()
+            state2 = self.game.player2_state()
+
+
             if not self.game.tick():
                 self.__init__(self.screen_size)
                 n_life -= 1
                 continue
+            reward2 = self.game.player2_reward()
+            next_state2 = self.game.player2_state()
+            print(self.game.ball.info())
+
             ball_update, p1_update, p2_update = self.game.info()
 
             
@@ -77,5 +91,5 @@ class Game():
             sleep(self.speed)
 
 if __name__=="__main__":
-    g = Game((910,700))
+    g = Game((400, 200))
     g.run()

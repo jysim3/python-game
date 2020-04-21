@@ -1,5 +1,7 @@
 import random 
 import sys
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Flatten
@@ -12,7 +14,7 @@ print(tf.__version__)
 class SnakeAI():
     def __init__(self, action_dim):
         self.action_dim = action_dim
-        self.size = (50,50)
+        self.size = (30,30)
         self.state_dim = len(Snake(self.size).state())
 
         model = Sequential([
@@ -29,11 +31,11 @@ class SnakeAI():
         self.epsilon = 1
         self.epsilon_decay = 1.0005
         self.memory = []
-        self.n_games = 5000
-        self.n_frames = 10
+        self.n_games = 50
+        self.n_frames = 1000
         self.model_name = 'snake2layers.h5'
         #self.q = np.zeros((*self.size,*self.size,self.action_dim,self.action_dim), dtype=float)
-    def explore(self, state, r=True, verbose = False):
+    def explore(self, state, r=False, verbose = False):
         #state = np.array([state])
         state = np.reshape(state, [1,self.state_dim])
         Q_estimates = self.model.predict(state)
@@ -50,7 +52,7 @@ class SnakeAI():
             '''
             action = np.argmax(Q_estimates)
         if verbose:
-            print(f"{state} {d[action]}")
+            print(f"{state} {d[action]} {Q_estimates}")
         return action, Q_estimates
     def train_one(self,state,direction,reward, next_state):
         # a,b,c,d = self.q[(*state),]
@@ -97,7 +99,7 @@ class SnakeAI():
             osSleep.inhibit()
             for n_game in range(self.n_games):
                 snake = Snake(self.size)    
-                for j in range(self.n_frames):
+                for _ in range(self.n_frames):
                     state = snake.state()
                     direction, prediction = self.explore(state)
                     snake.change_direction(direction+273)
@@ -118,7 +120,6 @@ class SnakeAI():
                         scores.append(snake.total_score())
                         scores = scores[-10:]
                         break
-                if n_game % 10 == 0:
                     sys.stdout.write(f"\rr: {n_game:6} "
                                 f"size: {sum(scores)/len(scores)}"
                                 f"score: {snake.total_score():3} "
@@ -150,8 +151,8 @@ class SnakeAI():
     def show(self):
         from snakeInterface import Game 
         g = Game(self.size)
-        get_action = lambda x: self.explore(x.state(),False, verbose=False)[0]
-        g.run(0.005,1,get_action)
+        get_action = lambda x: self.explore(x.state(), 0, verbose=False)[0]
+        g.run(0,5,get_action)
     def load(self):
         self.model.load_weights(self.model_name)
         self.epsilon = .62515
